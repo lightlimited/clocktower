@@ -13,7 +13,7 @@ from threading import Lock
 
 BROKER = "lightlimited.com"
 
-CLOCKWISE = 0
+CLOCKWISE = -1
 ANTIWISE = 1
 direction = CLOCKWISE
 
@@ -125,7 +125,7 @@ def DmxSent(state):
   #print("DMX sent")
 
 def getColour(colourString): 
-  if (colourString[0] != '#') or (colourString.len() < 7):
+  if (colourString[0] != '#') or (len(colourString) < 7):
     print("Invalid colour string")
     return []
   print("parsing colour %s" % colourString)
@@ -163,7 +163,7 @@ def insertColour(colourString):
   newcolour = True
   update_lights()
 
-def get_light_index(light_index):
+def get_light_index(light_index, direction):
   if direction == CLOCKWISE:
     light_index = (NUM_LIGHTS-1)-light_index
   unit = int(light_index/NUM_UNIT_LIGHTS)
@@ -214,8 +214,16 @@ def update_lights():
     lampgreen[loop_count] = nextgreen
     lampblue[loop_count] = nextblue
     newcolour = False
+
   for i in range(NUM_LIGHTS):
-    light_index = get_light_index(i);
+    light_index = get_light_index(i, direction);
+    #print("lamp %d: %d,%d,%d" % (i, lampred[light_index], lampgreen[light_index], lampblue[light_index]))
+    data.append(lampred[light_index])
+    data.append(lampgreen[light_index])
+    data.append(lampblue[light_index])
+
+  for i in range(NUM_LIGHTS):
+    light_index = get_light_index(i, direction*-1);
     #print("lamp %d: %d,%d,%d" % (i, lampred[light_index], lampgreen[light_index], lampblue[light_index]))
     data.append(lampred[light_index])
     data.append(lampgreen[light_index])
